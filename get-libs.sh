@@ -4,11 +4,7 @@ if [ ! -d "./boost" ]
 then
     git clone http://github.com/boostorg/boost \
         --origin upstream \
-        --recurse-submodules=libs/mpl \
-            --recurse-submodules=libs/config \
-            --recurse-submodules=libs/preprocessor \
-            --recurse-submodules=libs/type_traits \
-        --recurse-submodules=tools \
+        --recursive
         --jobs $(nproc)
 
     pushd ./boost
