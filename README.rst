@@ -13,6 +13,7 @@ Questions of Generative Programming - TMP library review
 
 This repository details findings for a university course.
 
+*Note!* This RST is formatted with things that might render poorly on GitHub!
 
 Boost.MPL
 =========
@@ -44,6 +45,11 @@ Depends on other Boost libraries:
  - Static Assert (feature available in Standard C++ :math:`\ge 11`)
  - Type Traits (feature available in Standard C++ :math:`\ge 11`)
 
+Due to targeting C++03, not many "advanced" or "modern" standard C++ is used.
+
+Heavily depends on preprocessor, and also on the custom Boost Preprocessor
+metaprogramming library.
+
 Outlook, development
 --------------------
 
@@ -65,6 +71,8 @@ Offers
     * With G++ 7.4.0 and Clang 9.0 it works!
  - Combinators (views) and "standard" data structure functions, like insertion,
    ``find``, ``count``, etc.
+
+:todo:`Lazy evaluation? Lambdae?`
 
 Boost.Hana
 ==========
