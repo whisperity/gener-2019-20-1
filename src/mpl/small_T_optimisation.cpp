@@ -181,6 +181,7 @@ struct small_string : small_string_base<S>
 
   small_string() : small_string_base<S>(
       const_cast<char*>(c_str<S>::value))
+  // const_cast needed with GCC 7.4.0, and not with Clang 9.0!
   {
     // Forward the string itself to the allocation so it can be used at
     // runtime.
