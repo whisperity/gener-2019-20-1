@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <iostream>
 
 #define BOOST_MPL_LIMIT_STRING_SIZE 64
@@ -188,48 +187,3 @@ struct small_string : small_string_base<S>
   }
 };
 
-template <typename S>
-char* small_string<S>::copy_str::To = nullptr;
-
-template <typename S>
-long small_string<S>::copy_str::Idx = 0;
-
-struct HUGE
-{
-  char S[1000];
-};
-
-int main()
-{
-  SOO<int, 1> heapInt(0);
-  std::cout << *heapInt.get() << '\n'; // 0
-  *heapInt.get() = 2;
-  std::cout << *heapInt.get() << '\n'; // 2
-
-  SOO<int, sizeof(int)> localInt(42);
-  std::cout << *localInt.get() << '\n'; // 42
-
-  SOO<HUGE, 42> hugeObj;
-  hugeObj.get()->S[0] = 'a';
-  hugeObj.get()->S[1] = 'b';
-  hugeObj.get()->S[2] = 0;
-  printf("%s\n", (char*)&(hugeObj.get()->S)); // ab
-
-  // Would be fun with CTAD...?
-  std::cout << size<string<'H', 'e', 'l', 'l', 'o'>>::value << '\n';
-  small_string<string<'H', 'e', 'l', 'l', 'o'>> A;
-  printf("%s\n", (char*)A.get()); // Hello
-
-  A.get()[0] = 'B';
-  printf("%s\n", (char*)A.get()); // Bello
-
-  using Whisperity = string<'W', 'h', 'i', 's', 'p', 'e', 'r', 'i', 't', 'y'>;
-  small_string<Whisperity> Wh;
-  printf("%s\n", (char*)Wh.get()); // Whisperity
-  Wh.get()[size<Whisperity>::value - 1] = 'i';
-  printf("%s\n", (char*)Wh.get()); // Whisperiti
-
-  using Wh2 = string<'Whi', 'speri', 'ty'>;
-  std::cout << size<Wh2>::value << '\n'; // 9
-  printf("%s\n", (char*)(small_string<Wh2>{}.get())); // Whisperity
-}
