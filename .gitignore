@@ -31,5 +31,9 @@
 *.out
 *.app
 
+# Boost includes.
+/include
+/boost
+
 # Documentation.
 README.html

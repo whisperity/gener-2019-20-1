@@ -1,8 +1,8 @@
-.PHONY: default
-default:
-	echo "What to do?"
+.PHONY: default all
+default: all
+all: docs
 
-docs:
+README.html: README.rst
 	pandoc -s \
 		-t html \
 		-f rst \
@@ -10,3 +10,5 @@ docs:
 		--mathjax \
 		README.rst \
 		-o README.html
+
+docs: README.html
