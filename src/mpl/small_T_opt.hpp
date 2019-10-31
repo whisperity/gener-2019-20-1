@@ -127,6 +127,7 @@ struct get_trait<T[N]>
 
 template <typename T, long Treshold>
 struct small_object_optimisation
+  // FIXME: THIS IS A STUPID NAME!
 {
   using allocation_type = typename if_<
       less_equal<
@@ -181,6 +182,7 @@ struct small_string : small_string_base<S>
   small_string() : small_string_base<S>(
       const_cast<char*>(c_str<S>::value))
   // const_cast needed with GCC 7.4.0, and not with Clang 9.0!
+  // FIXME: This const_cast is bullshit, need a proper "const T*" (T = element!) ctor to call in SOO<T>.
   {
     // Forward the string itself to the allocation so it can be used at
     // runtime.
