@@ -2,6 +2,9 @@
 
 #define BOOST_MPL_LIMIT_STRING_SIZE 64
 
+#include <boost/core/enable_if.hpp>
+#include <boost/type_traits.hpp>
+
 #include <boost/mpl/comparison.hpp>
 #include <boost/mpl/for_each.hpp>
 #include <boost/mpl/if.hpp>
@@ -11,6 +14,7 @@
 #include <boost/mpl/sizeof.hpp>
 #include <boost/mpl/string.hpp>
 
+using namespace boost;
 using namespace boost::mpl;
 
 template <typename T>
@@ -34,6 +38,7 @@ struct local
 {
   local() { std::cout << "Default initialised locally.\n"; }
   local(const T t) : value(t) { std::cout << "Copy initialised locally.\n"; }
+  local(const T* p) : value(*p) { std::cout << "Copy initialised from ptr locally.\n"; }
   T* get() { return &value; }
 
   T value;
@@ -43,12 +48,12 @@ template <typename T, long N>
 struct local<T[N]>
 {
   local() { std::cout << "Default initialised array locally.\n"; }
-  local(const T t[N])
+  local(const T* p)
   {
     std::cout << "Copying constructor array to local array...\n";
     for_each<
         range_c<long, 0, N> // generate indices
-    >(array_copier<T>(t, value));
+    >(array_copier<T>(p, value));
   }
 
   T* get() { return &value[0]; }
@@ -70,6 +75,12 @@ struct heap
     std::cout << "Copying to heap allocation.\n";
     *ptr = t;
   }
+  heap(const T* p)
+    : heap()
+  {
+    std::cout << "Copying to heap allocation from pointer...\n";
+    *ptr = *p;
+  }
   ~heap()
   {
     std::cout << "Destroying heap allocation.\n";
@@ -88,13 +99,13 @@ struct heap<T[N]>
     std::cout << "Allocating array on heap...\n";
     ptr = new T[N];
   }
-  heap(const T t[N])
+  heap(const T* p)
     : heap()
   {
     std::cout << "Copying array to heap...\n";
     for_each<
         range_c<long, 0, N> // generate indices
-    >(array_copier<T>(t, ptr));
+    >(array_copier<T>(p, ptr));
   }
   ~heap()
   {
@@ -126,8 +137,7 @@ struct get_trait<T[N]>
 };
 
 template <typename T, long Treshold>
-struct small_object_optimisation
-  // FIXME: THIS IS A STUPID NAME!
+struct local_or_heap
 {
   using allocation_type = typename if_<
       less_equal<
@@ -142,8 +152,23 @@ struct small_object_optimisation
 
   typedef T value_type;
 
-  small_object_optimisation() {}
-  small_object_optimisation(const T t) : alloc(t) {}
+  local_or_heap() {}
+
+  /* local_or_heap(const T t) participates in overload resolution only if
+   * T isn't an array type.
+   */
+  template <typename U = T>
+  explicit local_or_heap(
+      const typename disable_if<is_array<T>, U>::type u)
+    : alloc(u) {}
+
+  /* local_or_heap(const T* p) participates in overload resolution only if
+   * T *is* an array type.
+   */
+  template <typename U = T>
+  explicit local_or_heap(
+      typename enable_if<is_array<T>, typename decay<const U>::type>::type p)
+    : alloc(p) {}
 
   typename get_trait<T>::retty get()
   {
@@ -152,40 +177,5 @@ struct small_object_optimisation
 };
 
 template <typename T, long Treshold>
-using SOO = small_object_optimisation<T, Treshold>;
-
-template <typename S>
-using small_string_base = SOO< char[size<S>::value + 1], 8 >;
-
-template <typename S> // S should me mpl::string...
-struct small_string : small_string_base<S>
-// Compile-time decides to put on stack or heap.
-{
-  struct copy_str
-  {
-    // Helper functor that copies a string char-by-char to the runtime
-    // buffer.
-    static char* To;
-    static long Idx;
-    copy_str(char* ptr)
-    {
-      To = ptr;
-    }
-
-    void operator()(char c)
-    {
-      To[Idx] = c;
-      ++Idx;
-    }
-  };
-
-  small_string() : small_string_base<S>(
-      const_cast<char*>(c_str<S>::value))
-  // const_cast needed with GCC 7.4.0, and not with Clang 9.0!
-  // FIXME: This const_cast is bullshit, need a proper "const T*" (T = element!) ctor to call in SOO<T>.
-  {
-    // Forward the string itself to the allocation so it can be used at
-    // runtime.
-  }
-};
+using LOH = local_or_heap<T, Treshold>;
 
