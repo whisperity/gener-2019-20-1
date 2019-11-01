@@ -146,11 +146,63 @@ The following holds:
   DO NOT BREAK 1st ELEMENT OF THE LIST ABOVE ON 80char BECAUSE SUBITEM PARSING WILL FAIL
 
 
+
 **********
 Boost.Hana
 **********
 
-:todo:`This is a to-do!`
+Requirements
+============
+
+**C++ 14**
+
+Compatible compilers (from official documentation, these are the currently
+required **and tested** toolchains the development of the library happens
+against):
+
+ - GNU/GCC: :math:`\ge 6.0.0`
+ - LLVM/Clang: :math:`\ge 3.5.0`
+ - MSVC: :math:`\ge 19.14` (officially annotated as *Visual Studio 2017 Update
+   7*)
+
+Outlook, development
+====================
+
+Due to *MPL* targeting **C++ 03** and C++ :math:`11` introducing a plethora of
+new features to the language, a library called *Boost.MP11* was introduced, but
+seems to have eventually fallen short of requirements and wishes, prompting for
+the introduction of *Hana*, especially with subsequent introduction of features
+in C++ :math:`14` supporting metaprogramming.
+
+Hana is seemingly in a somewhat active development. The library is mostly
+complete and feature-rich, with minor or medium-sized extensions and fixes
+either ongoing, or on the table as to-be fixed issue tickets. In the past year,
+Hana has seen up to :math:`100` natural commits, far more, than *MPL* amassed
+in a span of multiple years and counting automatic or merge commits, too.
+
+It is visible that the maintainers of Hana has put a great deal of effort into
+making the library user-friendly even for beginners:
+
+ - The size of the documentation is significantly larger than that of *MPL*.
+ - The documentation continuously brings up believable live, real-world
+   examples, as opposed to the abstract and purely mathematical-ish approach of
+   the *MPL* documentation.
+ - Tests and performance measurements are done in a Continuous Integration (CI)
+   loop, updating the released documentation (for the ``master`` branch)
+   automatically.
+
+Offers
+======
+
+The goals of Hana is to unify type-level computation (such as metaprogramming
+offered by *MPL*) and heterogenous (such as variadic containers) computation
+into a common model, improving performance and user experience.
+
+
+Feature discussion
+==================
+
+
 
 **********
 References
